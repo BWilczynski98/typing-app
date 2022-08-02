@@ -1,10 +1,6 @@
-import React, { useContext } from "react";
-import { GlobalContext } from "./api/context/GlobalStorage";
-import "./App.css";
+import React from "react";
 
 const App = () => {
-  const { words } = useContext(GlobalContext);
-  console.log(words[10]);
   return <></>;
 };
 
