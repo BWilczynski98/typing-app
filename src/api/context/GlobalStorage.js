@@ -5,6 +5,7 @@ export const GlobalContext = createContext();
 
 export const GlobalStorage = ({ children }) => {
   const [words, setWords] = useState();
+  
   const generateRandomWords = async () => {
     const response = await axios.get(
       "https://random-word-api.herokuapp.com/all"
