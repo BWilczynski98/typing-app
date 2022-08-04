@@ -1,7 +1,12 @@
 import React from "react";
+import { AccountProfile } from "./components/AccountProfile";
 
 const App = () => {
-  return <></>;
+  return (
+    <>
+      <AccountProfile />
+    </>
+  );
 };
 
 export default App;
