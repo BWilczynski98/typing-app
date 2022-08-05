@@ -1,25 +1,10 @@
-import React, { useState, useEffect, createContext } from "react";
-import axios from "axios";
+import React, { createContext } from "react";
 
 export const GlobalContext = createContext();
 
 export const GlobalStorage = ({ children }) => {
-  const [words, setWords] = useState();
-  
-  const generateRandomWords = async () => {
-    const response = await axios.get(
-      "https://random-word-api.herokuapp.com/all"
-    );
-    const words = await response.data;
-    await setWords(words);
-  };
-
-  useEffect(() => {
-    generateRandomWords();
-  }, []);
-
   const STORAGE = {
-    words: words,
+    word: "word",
   };
 
   return (
