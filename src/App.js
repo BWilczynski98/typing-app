@@ -1,7 +1,9 @@
 import React from "react";
+import styled from "styled-components";
+import { TypingTest } from "./components/TypingTest/TypingTest";
 
 const App = () => {
-  return <></>;
+  return <div><TypingTest/></div>;
 };
 
 export default App;
