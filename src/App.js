@@ -1,12 +1,8 @@
 import React from "react";
-import { TypingTest } from "./components/TypingTest/TypingTest";
 
 const App = () => {
-  return (
-    <div>
-      <TypingTest />
-    </div>
-  );
-};
+  return <div></div>;
+}
+
 
 export default App;
