@@ -75,10 +75,17 @@ export const Text = styled.div`
   width: 50vw;
   height: 20vh;
   margin: 6vh 0 10vh 0;
+  flex-wrap: wrap;
+  gap: 10px;
 `;
 
 export const StyledTypography = styled(Typography)`
-  color: ${colors.darkGrey};
+  color: ${({ status }) =>
+    (status == true && "green") ||
+    (status == false && "red") ||
+    (status == null && "black")};
+  background-color: ${({ tracked }) => tracked == "true" && colors.ligthGrey};
+  background-color: ${({ iscorrect }) => iscorrect == "false" && "red"};
 `;
 
 export const Input = styled(TextField)`
