@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { GlobalContext } from "../../api/context/GlobalStorage";
 import Timer from "./Timer/Timer";
 import { Counter } from "./Counter/Counter";
 import {
@@ -16,6 +17,9 @@ import axios from "axios";
 import { Button } from "@mui/material";
 
 export const TypingTest = () => {
+  const { authenticator, user } = useContext(GlobalContext);
+  const { userIsLoggedIn } = authenticator;
+  const { savePersonalRecord } = user;
   const [wordsToTranscription, setWordsToTranscription] = useState([]);
   const [userWordType, setUserWordType] = useState("");
   const [index, setIndex] = useState(0);
@@ -28,12 +32,21 @@ export const TypingTest = () => {
   const [gameStatus, setGameStatus] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState(false);
 
+  // timer settings
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 59);
-  const { isRunning, seconds, start, restart, pause } = useTimer({
+  time.setSeconds(time.getSeconds() + 5);
+  const { isRunning, seconds, start, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,
-    onExpire: () => setGameStatus(true),
+    onExpire: () => {
+      setGameStatus(true);
+      userIsLoggedIn &&
+        savePersonalRecord({
+          WPM: correctWordsPerMinutes,
+          CPM: charsPerMinutes,
+          ACC: +accurace.toFixed(2),
+        });
+    },
   });
 
   const transformWordsArray = (words) => {
@@ -67,6 +80,7 @@ export const TypingTest = () => {
     };
   }, [downloadStatus]);
 
+  // Calculating the percentage of accuracy
   useEffect(() => {
     correctWordsPerMinutes &&
       setAccurace((correctWordsPerMinutes / allUserWordsPerMinutes) * 100);
@@ -160,7 +174,7 @@ export const TypingTest = () => {
         disabled={gameStatus}
         value={userWordType.trim()}
         onChange={(e) => {
-          index == 0 && userWordType == "" && start();
+          index == 0 && start();
           compareWordInRealTime(e.target.value);
         }}
         onKeyPress={(e) => {

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { GlobalContext } from "../../../api/context/GlobalStorage";
 import {
   Wrapper,
   Container,
@@ -14,6 +15,9 @@ import { useFormik } from "formik";
 import { ErrorMessage } from "../ErrorMessage";
 
 const SingUp = () => {
+  const { authenticator } = useContext(GlobalContext);
+  const { singUp, errorMessage } = authenticator;
+
   const validationSchema = yup.object().shape({
     userName: yup.string().required("Entered a vaild name"),
     userEmail: yup.string().email().required("Entered a vaild email"),
@@ -35,7 +39,7 @@ const SingUp = () => {
       userConfirmPassword: "",
     },
     onSubmit: (values) => {
-      console.log(values);
+      singUp(values.userEmail, values.userPassword, values.userName);
     },
     validationSchema: validationSchema,
   });
@@ -47,7 +51,7 @@ const SingUp = () => {
           <StyledTypography variant="h5">
             Create your <Span>free</Span> account
           </StyledTypography>
-          <ErrorMessage />
+          {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
         </Box>
         <FormBox onSubmit={formik.handleSubmit}>
           <InputForSingUp

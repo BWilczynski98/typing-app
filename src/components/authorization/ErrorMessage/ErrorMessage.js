@@ -1,10 +1,8 @@
 import React from "react";
 import { StyledAlert } from "../Styles/Error.styles";
 
-const ErrorMessage = () => {
-  return (
-    <StyledAlert severity="error">Something is no yes ¯\_(ツ)_/¯</StyledAlert>
-  );
+const ErrorMessage = ({ errorMessage }) => {
+  return <StyledAlert severity="error">{errorMessage}</StyledAlert>;
 };
 
 export default ErrorMessage;
