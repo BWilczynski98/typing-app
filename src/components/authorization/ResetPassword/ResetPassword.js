@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { GlobalContext } from "../../../api/context/GlobalStorage";
 import {
   Wrapper,
   Container,
@@ -13,18 +14,20 @@ import {
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { ErrorMessage } from "../ErrorMessage";
+import { Global } from "@emotion/react";
 
 const ResetPassword = () => {
+  const { authenticator } = useContext(GlobalContext);
+  const { resetPassword, errorMessage } = authenticator;
   const validationSchema = yup.object().shape({
     userEmail: yup.string().email().required("Entered a vaild email"),
   });
 
   const formik = useFormik({
-    initialValues: {
-      userEmail: "",
-    },
+    initialValues: {},
     onSubmit: (values) => {
       console.log(values);
+      resetPassword(values.userEmail);
     },
     validationSchema: validationSchema,
   });
@@ -36,7 +39,7 @@ const ResetPassword = () => {
           <StyledTypography variant="h5">
             Enter your <Span>email</Span> address
           </StyledTypography>
-          <ErrorMessage />
+          {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
         </Box>
         <FormBox onSubmit={formik.handleSubmit}>
           <InputForSingUp
