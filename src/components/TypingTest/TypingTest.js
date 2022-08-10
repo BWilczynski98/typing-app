@@ -34,7 +34,7 @@ export const TypingTest = () => {
 
   // timer settings
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 5);
+  time.setSeconds(time.getSeconds() + 59);
   const { isRunning, seconds, start, restart } = useTimer({
     expiryTimestamp: time,
     autoStart: false,
@@ -67,16 +67,19 @@ export const TypingTest = () => {
   };
 
   useEffect(() => {
-    const getWords = async () => {
+    const getQuotes = async () => {
       const response = await axios.get(
-        "https://random-word-api.herokuapp.com/word?number=3000"
+        "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
       );
-      const words = await response.data;
-      await transformWordsArray(words);
+      const quote = await Object.values(response.data.results).map((quote) => {
+        return quote.content.split(" ");
+      });
+      const mergeArray = await quote.flat();
+      await transformWordsArray(mergeArray);
     };
 
     return () => {
-      getWords();
+      getQuotes();
     };
   }, [downloadStatus]);
 
@@ -179,6 +182,7 @@ export const TypingTest = () => {
         }}
         onKeyPress={(e) => {
           if (e.code == "Space" || e.keyCode == 32) {
+            index == 0 && start();
             compareApprovedWords();
             setUserWordType("");
           }
