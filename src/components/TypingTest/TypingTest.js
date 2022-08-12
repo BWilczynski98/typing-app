@@ -71,22 +71,30 @@ export const TypingTest = () => {
     });
   };
 
-  useEffect(() => {
-    const getQuotes = async () => {
-      const response = await axios.get(
-        "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
-      );
-      const quote = await Object.values(response.data.results).map((quote) => {
-        return quote.content.split(" ");
-      });
-      const mergeArray = await quote.flat();
-      await transformWordsArray(mergeArray);
-    };
+  const getQuotes = async () => {
+    const response = await axios.get(
+      "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
+    );
+    const quote = await Object.values(response.data.results).map((quote) => {
+      return quote.content.split(" ");
+    });
+    const mergeArray = await quote.flat();
+    await transformWordsArray(mergeArray);
+  };
 
+  useEffect(() => {
+    getQuotes();
     return () => {
       getQuotes();
     };
   }, [downloadStatus]);
+
+  useEffect(() => {
+    getQuotes();
+    return () => {
+      getQuotes();
+    };
+  }, []);
 
   // Calculating the percentage of accuracy
   useEffect(() => {
