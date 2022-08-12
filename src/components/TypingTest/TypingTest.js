@@ -1,39 +1,233 @@
-import React from "react";
-import Timer  from "./Timer/Timer";
+import React, { useState, useEffect, useContext } from "react";
+import { GlobalContext } from "../../api/context/GlobalStorage";
+import Timer from "./Timer/Timer";
 import { Counter } from "./Counter/Counter";
 import {
   Wrapper,
   Header,
-  NeonWrapper,
-  Subtitle,
+  Title,
+  InputContainer,
   Input,
   Text,
+  Row,
   CounterWrapper,
-  StyledTypography,
+  WortToTranscribe,
+  OrangeSpan,
+  StartMark,
+  StartMarkArrow,
 } from "./TypingTest.style";
+import { useTimer } from "react-timer-hook";
+import axios from "axios";
+import { Button, Typography, useMediaQuery } from "@mui/material";
 
 export const TypingTest = () => {
+  const { authenticator, user } = useContext(GlobalContext);
+  const { userIsLoggedIn } = authenticator;
+  const { savePersonalRecord } = user;
+  const [wordsToTranscription, setWordsToTranscription] = useState([]);
+  const [userWordType, setUserWordType] = useState("");
+  const [index, setIndex] = useState(0);
+  const [minRange, setMinRange] = useState(0);
+  const [maxRange, setMaxRange] = useState(10);
+  const [allUserWordsPerMinutes, setAllUserWordsPerMinutes] = useState(0);
+  const [correctWordsPerMinutes, setCorrectWordsPerMinutes] = useState(0);
+  const [charsPerMinutes, setCharsPerMinutes] = useState(0);
+  const [accurace, setAccurace] = useState(0);
+  const [gameStatus, setGameStatus] = useState(false);
+  const [downloadStatus, setDownloadStatus] = useState(false);
+  const [userStartType, setUserStartType] = useState(false);
+  const breakPoint = useMediaQuery("(max-width:768px )");
+  // timer settings
+  const time = new Date();
+  time.setSeconds(time.getSeconds() + 59);
+  const { isRunning, seconds, start, restart } = useTimer({
+    expiryTimestamp: time,
+    autoStart: false,
+    onExpire: () => {
+      setGameStatus(true);
+      userIsLoggedIn &&
+        savePersonalRecord({
+          WPM: correctWordsPerMinutes,
+          CPM: charsPerMinutes,
+          ACC: +accurace.toFixed(2),
+        });
+    },
+  });
+
+  const transformWordsArray = (words) => {
+    setWordsToTranscription([]);
+    words.map((word, index) => {
+      setWordsToTranscription((prev) => {
+        return [
+          ...prev,
+          {
+            word: word,
+            status: null,
+            tracked: index == 0 ? true : false,
+            isCorrect: true,
+          },
+        ];
+      });
+    });
+  };
+
+  useEffect(() => {
+    const getQuotes = async () => {
+      const response = await axios.get(
+        "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
+      );
+      const quote = await Object.values(response.data.results).map((quote) => {
+        return quote.content.split(" ");
+      });
+      const mergeArray = await quote.flat();
+      await transformWordsArray(mergeArray);
+    };
+
+    return () => {
+      getQuotes();
+    };
+  }, [downloadStatus]);
+
+  // Calculating the percentage of accuracy
+  useEffect(() => {
+    correctWordsPerMinutes &&
+      setAccurace((correctWordsPerMinutes / allUserWordsPerMinutes) * 100);
+  }, [allUserWordsPerMinutes]);
+
+  const compareWordInRealTime = (userInput) => {
+    setUserWordType(userInput);
+    if (wordsToTranscription[index].word.includes(userInput.trim())) {
+      wordsToTranscription[index].isCorrect = true;
+    } else {
+      wordsToTranscription[index].isCorrect = false;
+    }
+  };
+
+  const compareApprovedWords = () => {
+    setIndex((index) => ++index);
+    setAllUserWordsPerMinutes((prev) => ++prev);
+    wordsToTranscription[index + 1].tracked = true;
+    wordsToTranscription[index].isCorrect = true;
+    wordsToTranscription[index].tracked = false;
+
+    if (userWordType === wordsToTranscription[index].word) {
+      wordsToTranscription[index].status = true;
+      setCorrectWordsPerMinutes((prev) => ++prev);
+      setCharsPerMinutes(
+        (prev) => (prev = prev + wordsToTranscription[index].word.length)
+      );
+    } else {
+      wordsToTranscription[index].status = false;
+    }
+
+    if (index != 0 && index % 10 === 0) {
+      setMinRange((prev) => (prev += 10));
+      setMaxRange((prev) => (prev += 10));
+    }
+  };
+
+  const clearVariables = async () => {
+    await setDownloadStatus((prev) => !prev);
+    await setIndex(0);
+    await setAllUserWordsPerMinutes(0);
+    await setCorrectWordsPerMinutes(0);
+    await setCharsPerMinutes(0);
+    await setAccurace(0);
+    await setUserWordType("");
+    await setMinRange(0);
+    await setMaxRange(10);
+    await setGameStatus(false);
+  };
+
+  const restartGame = () => {
+    const autoStart = false;
+    const newTime = new Date();
+    newTime.setSeconds(newTime.getSeconds() + 59);
+    restart(newTime, autoStart);
+    setUserStartType(false);
+    clearVariables();
+  };
+
   return (
     <Wrapper>
-      <NeonWrapper>
-        <Header>TEST YOUR TYPING SKILLS</Header>
-      </NeonWrapper>
-      <Subtitle>TYPING SPEED TEST</Subtitle>
+      <Header>
+        <Title variant="h2">
+          Test your <OrangeSpan>typing</OrangeSpan> skills
+        </Title>
+      </Header>
       <CounterWrapper>
-        <Timer></Timer>
-        <Counter number={15} text={"words/min"} />
-        <Counter number={98} text={"chars/min"} />
-        <Counter number={72} text={"% accuracy"} />
+        <Timer seconds={seconds} isRunning={isRunning}></Timer>
+        <Counter number={correctWordsPerMinutes} text={"words/min"} />
+        <Counter number={charsPerMinutes} text={"chars/min"} />
+        <Counter number={accurace.toFixed(2)} text={"% accuracy"} />
       </CounterWrapper>
       <Text>
-        <StyledTypography variant="body1">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, dolorum
-          dolor. Repellat non eos asperiores quam dignissimos, atque quis aut
-          maiores quia, quidem corporis, veniam officiis sint necessitatibus
-          explicabo
-        </StyledTypography>
+        <Row>
+          {Object.values(wordsToTranscription).map(
+            ({ word, status, tracked, isCorrect }, index) => {
+              if (index >= minRange && index <= maxRange)
+                return (
+                  <WortToTranscribe
+                    key={Math.random()}
+                    variant="h5"
+                    component="span"
+                    status={status}
+                    tracked={tracked.toString()}
+                    iscorrect={isCorrect.toString()}
+                  >
+                    {word}
+                  </WortToTranscribe>
+                );
+            }
+          )}
+        </Row>
+        <Row>
+          {Object.values(wordsToTranscription).map(
+            ({ word, status, tracked, isCorrect }, index) => {
+              if (index >= minRange + 11 && index <= maxRange + 9)
+                return (
+                  <WortToTranscribe
+                    key={Math.random()}
+                    variant="h5"
+                    component="span"
+                    status={status}
+                    tracked={tracked.toString()}
+                    iscorrect={isCorrect.toString()}
+                  >
+                    {word}
+                  </WortToTranscribe>
+                );
+            }
+          )}
+        </Row>
       </Text>
-      <Input></Input>
+
+      <InputContainer>
+        <StartMark view={userStartType}>
+          <Typography variant="subtitle1">Start typing</Typography>
+          <StartMarkArrow />
+        </StartMark>
+
+        <Input
+          disabled={gameStatus}
+          value={userWordType.trim()}
+          onChange={(e) => {
+            if (index == 0) {
+              start();
+              setUserStartType(true);
+            }
+            compareWordInRealTime(e.target.value);
+          }}
+          onKeyPress={(e) => {
+            if (e.code == "Space" || e.keyCode == 32) {
+              index == 0 && start();
+              compareApprovedWords();
+              setUserWordType("");
+            }
+          }}
+        ></Input>
+      </InputContainer>
+      {gameStatus && <Button onClick={() => restartGame()}>Restar game</Button>}
     </Wrapper>
   );
 };

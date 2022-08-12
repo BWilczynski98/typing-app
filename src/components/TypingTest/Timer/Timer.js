@@ -1,26 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { CustomTimer } from "./Timer.style";
-import { StyledTypography } from "../TypingTest.style";
+import { Typography, useMediaQuery } from "@mui/material";
 
-const Timer = () => {
-  const [seconds, setSeconds] = useState(60);
-
-  useEffect(() => {
-    let timer;
-    timer = setInterval(() => {
-      setSeconds(seconds - 1);
-      if (seconds === 0) {
-        setSeconds(0);
-      }
-    }, 1000);
-    return () => clearInterval(timer);
-  });
+const Timer = ({ seconds, isRunning }) => {
+  const breakPoint = useMediaQuery("(max-width:768px )");
 
   return (
     <>
       <CustomTimer>
-        <StyledTypography variant="h4">{seconds}</StyledTypography>
-        <StyledTypography variant="substitle1">seconds</StyledTypography>
+        <Typography variant={breakPoint ? "h5" : "h4"}>
+          {isRunning ? seconds : "60"}
+        </Typography>
+        <Typography variant="substitle1">seconds</Typography>
       </CustomTimer>
     </>
   );

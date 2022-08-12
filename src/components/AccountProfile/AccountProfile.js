@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { GlobalContext } from "../../api/context/GlobalStorage";
 import {
   Wrapper,
   Container,
@@ -23,8 +24,13 @@ import {
 import { Typography, Divider } from "@mui/material";
 
 const AccountProfile = () => {
+  const { authenticator, user } = useContext(GlobalContext);
+  const { logout } = authenticator;
+  const { userStats } = user;
   const [password, setPassword] = useState("password");
   const [passwordHandler, setPasswordHandler] = useState(true);
+
+  console.log(userStats);
 
   return (
     <Wrapper>
@@ -135,17 +141,9 @@ const AccountProfile = () => {
             </CardItem>
             <CardItem>
               <div>
-                <Typography variant="body2">Score</Typography>
-                <Typography variant="body1">
-                  <OrangeSpan>150</OrangeSpan> points
-                </Typography>
-              </div>
-            </CardItem>
-            <CardItem>
-              <div>
                 <Typography variant="body2">Words</Typography>
                 <Typography variant="body1">
-                  <OrangeSpan>74</OrangeSpan>/min
+                  <OrangeSpan></OrangeSpan>/min
                 </Typography>
               </div>
             </CardItem>
@@ -168,7 +166,9 @@ const AccountProfile = () => {
           </Card>
         </Box>
         <Box>
-          <LogoutButton variant="contained">Logout</LogoutButton>
+          <LogoutButton variant="contained" onClick={logout}>
+            Logout
+          </LogoutButton>
         </Box>
       </Container>
     </Wrapper>
