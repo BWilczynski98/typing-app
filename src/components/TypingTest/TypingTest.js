@@ -18,7 +18,7 @@ import {
 } from "./TypingTest.style";
 import { useTimer } from "react-timer-hook";
 import axios from "axios";
-import { Button, Typography, useMediaQuery } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 export const TypingTest = () => {
   const { authenticator, user } = useContext(GlobalContext);
@@ -36,7 +36,7 @@ export const TypingTest = () => {
   const [gameStatus, setGameStatus] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState(false);
   const [userStartType, setUserStartType] = useState(false);
-  const breakPoint = useMediaQuery("(max-width:768px )");
+  const [rawQoutes, setRawQoutes] = useState([]);
   // timer settings
   const time = new Date();
   time.setSeconds(time.getSeconds() + 59);
@@ -54,46 +54,41 @@ export const TypingTest = () => {
     },
   });
 
-  const transformWordsArray = (words) => {
-    setWordsToTranscription([]);
-    words.map((word, index) => {
-      setWordsToTranscription((prev) => {
-        return [
-          ...prev,
-          {
-            word: word,
-            status: null,
-            tracked: index == 0 ? true : false,
-            isCorrect: true,
-          },
-        ];
-      });
+  const transformWordsArray = () => {
+    console.log(rawQoutes);
+    const words = rawQoutes
+      .sort(() => 0.5 - Math.random())
+      .join(" ")
+      .split(" ");
+    console.log(words);
+    const transformArray = words.map((word, index) => {
+      return {
+        word: word,
+        status: null,
+        tracked: index == 0 ? true : false,
+        isCorrect: true,
+      };
     });
+    setWordsToTranscription(transformArray);
   };
 
   const getQuotes = async () => {
     const response = await axios.get(
       "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
     );
-    const quote = await Object.values(response.data.results).map((quote) => {
-      return quote.content.split(" ");
-    });
-    const mergeArray = await quote.flat();
-    await transformWordsArray(mergeArray);
+    console.log(response.data.results);
+    const quote = await Object.values(response.data.results).map(
+      (quote) => quote.content
+    );
+    setRawQoutes(quote);
   };
 
   useEffect(() => {
-    getQuotes();
-    return () => {
-      getQuotes();
-    };
-  }, [downloadStatus]);
+    if (rawQoutes.length) transformWordsArray();
+  }, [rawQoutes]);
 
   useEffect(() => {
     getQuotes();
-    return () => {
-      getQuotes();
-    };
   }, []);
 
   // Calculating the percentage of accuracy
