@@ -85,7 +85,7 @@ export const TypingTest = () => {
 
   useEffect(() => {
     if (rawQoutes.length) transformWordsArray();
-  }, [downloadStatus]);
+  }, [rawQoutes, downloadStatus]);
 
   useEffect(() => {
     getQuotes();
