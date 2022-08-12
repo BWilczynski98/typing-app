@@ -1,24 +1,56 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { colors } from "../.././styles/GlobalColors.styles";
 import { TextField, Typography } from "@mui/material";
-import { keyframes } from "styled-components";
 
-const borderShadow = ` 0 0 0.1vw 0.4vw ${colors.orange},
-        0 0 0.4vw 0.6vw ${colors.white},
-        0 0 2vw 0.2vw ${colors.orange},
-        inset 0 0 1vw 0.4vw ${colors.white},
-        inset 0 0 0.4vw 0.2vw ${colors.white},
-        inset 0 0 0.5vw 0.2vw ${colors.orange};`;
+const typing = keyframes`
+ 
+  from {
+    width: 0;
+  }
+`;
 
-const borderGlow = keyframes`
- 0%  { box-shadow: none; }
- 30% { box-shadow: none; }
- 35% { box-shadow: ${borderShadow}; }
- 37% { box-shadow: none; }
- 45% { box-shadow: ${borderShadow}; }
- 47% { box-shadow: none; }
- 49% { box-shadow: ${borderShadow}; }
- 100% { box-shadow: ${borderShadow}; }
+const blink = keyframes`
+ 
+  50% {
+    border-color: transparent
+  }
+
+`;
+
+const slideIn = keyframes`
+  0% { 
+    transform: translateY(40vh); 
+  }
+
+  66%{
+    transform: translateY(40vh); 
+  }
+
+  100% {
+    transform: translateY(0vh);
+  }
+`;
+
+const Levitation = keyframes`
+0% {
+  transform: translatey(0px);
+}
+
+50% {
+  transform: translatey(15px);
+}
+
+100% {
+  transform: translatey(0px);
+}
+`;
+
+const opacityTransitions = keyframes`
+  0% { opacity:0; }
+  25% { opacity:0; }
+  50% { opacity:0; }
+  75% { opacity:0; }
+  100% { opacity:1; }
 `;
 
 export const Wrapper = styled.div`
@@ -29,21 +61,39 @@ export const Wrapper = styled.div`
   max-width: 100vw;
   max-height: 100vh;
   margin-top: 3%;
-  font-family: "Text Me One", sans-serif;
-`;
-
-export const NeonWrapper = styled.div`
-  border: solid 2px ${colors.orange};
-  border-radius: 1.5rem;
-  animation: ${borderGlow} 3s linear forwards;
 `;
 
 export const Header = styled.div`
+  width: 100vw;
   padding: 0 3.5rem 0 3.5rem;
-  font-size: 3.5rem;
-  color: ${colors.orange};
-  font-family: "Text Me One", sans-serif;
-  box-shadow: ${borderShadow};
+  text-align: center;
+  display: flex;
+  justify-content: center;
+`;
+
+export const Title = styled(Typography)`
+  width: 18ch;
+  animation: ${typing} 2s steps(22), ${blink} 0.5s step-end infinite alternate,
+    ${slideIn} 3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid ${colors.orange};
+
+  && {
+    font-size: 70px;
+  }
+
+  @media screen and (max-width: 768px) {
+    && {
+      font-size: 40px;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    && {
+      font-size: 26px;
+    }
+  }
 `;
 
 export const Subtitle = styled.div`
@@ -56,12 +106,16 @@ export const Subtitle = styled.div`
 
 export const CounterWrapper = styled.div`
   display: flex;
-  width: 40%;
+  width: 50%;
   height: 40%;
   justify-content: space-around;
   align-items: center;
   font-size: small;
   margin-top: 30px;
+  animation: ${opacityTransitions} 4s ease;
+  @media screen and (max-width: 768px) {
+    width: 90%;
+  }
 `;
 
 export const Text = styled.div`
@@ -73,25 +127,57 @@ export const Text = styled.div`
   background-color: #fff;
   border-radius: 10px;
   width: 50vw;
-  height: 20vh;
+  min-height: 20vh;
   margin: 6vh 0 10vh 0;
   flex-wrap: wrap;
-  gap: 10px;
+  overflow: hidden;
+  animation: ${opacityTransitions} 4s ease;
+  @media screen and (max-width: 768px) {
+    width: 90vw;
+  }
 `;
 
-export const StyledTypography = styled(Typography)`
+export const Row = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 50vw;
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 768px) {
+    width: 90vw;
+  }
+`;
+
+export const WortToTranscribe = styled(Typography)`
   color: ${({ status }) =>
     (status == true && "green") ||
     (status == false && "red") ||
     (status == null && "black")};
   background-color: ${({ tracked }) => tracked == "true" && colors.ligthGrey};
   background-color: ${({ iscorrect }) => iscorrect == "false" && "red"};
+  border-radius: 10px;
+
+  && {
+    letter-spacing: 3px;
+    padding: 3px;
+  }
+`;
+
+export const InputContainer = styled.div`
+  animation: ${opacityTransitions} 4s ease;
+  position: relative;
+  width: 50vw;
+
+  @media screen and (max-width: 768px) {
+    width: 90vw;
+  }
 `;
 
 export const Input = styled(TextField)`
+  position: relative;
   background-color: #fff;
   display: flex;
-  width: 50vw;
+  width: 100%;
   & .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
     border: solid 1px;
   }
@@ -99,4 +185,35 @@ export const Input = styled(TextField)`
     border-color: orange;
     border: solid 2px;
   }
+`;
+
+export const OrangeSpan = styled.span`
+  color: ${colors.orange};
+`;
+
+export const StartMark = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -70px;
+  background-color: ${colors.orange};
+  width: 100px;
+  height: 40px;
+  color: white;
+  border-radius: 10px;
+  z-index: 1;
+  animation: ${Levitation} 2.2s ease infinite;
+  transition: 0.5s ease;
+  opacity: ${({ view }) => (!view ? 1 : 0)};
+`;
+
+export const StartMarkArrow = styled.div`
+  position: absolute;
+  background-color: ${colors.orange};
+  width: 20px;
+  height: 20px;
+  bottom: -5px;
+  transform: rotate(45deg);
+  z-index: -1;
 `;

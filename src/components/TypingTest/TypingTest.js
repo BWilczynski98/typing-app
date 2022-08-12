@@ -5,16 +5,20 @@ import { Counter } from "./Counter/Counter";
 import {
   Wrapper,
   Header,
-  NeonWrapper,
-  Subtitle,
+  Title,
+  InputContainer,
   Input,
   Text,
+  Row,
   CounterWrapper,
-  StyledTypography,
+  WortToTranscribe,
+  OrangeSpan,
+  StartMark,
+  StartMarkArrow,
 } from "./TypingTest.style";
 import { useTimer } from "react-timer-hook";
 import axios from "axios";
-import { Button } from "@mui/material";
+import { Button, Typography, useMediaQuery } from "@mui/material";
 
 export const TypingTest = () => {
   const { authenticator, user } = useContext(GlobalContext);
@@ -24,14 +28,15 @@ export const TypingTest = () => {
   const [userWordType, setUserWordType] = useState("");
   const [index, setIndex] = useState(0);
   const [minRange, setMinRange] = useState(0);
-  const [maxRange, setMaxRange] = useState(15);
+  const [maxRange, setMaxRange] = useState(10);
   const [allUserWordsPerMinutes, setAllUserWordsPerMinutes] = useState(0);
   const [correctWordsPerMinutes, setCorrectWordsPerMinutes] = useState(0);
   const [charsPerMinutes, setCharsPerMinutes] = useState(0);
   const [accurace, setAccurace] = useState(0);
   const [gameStatus, setGameStatus] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState(false);
-
+  const [userStartType, setUserStartType] = useState(false);
+  const breakPoint = useMediaQuery("(max-width:768px )");
   // timer settings
   const time = new Date();
   time.setSeconds(time.getSeconds() + 59);
@@ -130,7 +135,7 @@ export const TypingTest = () => {
     await setAccurace(0);
     await setUserWordType("");
     await setMinRange(0);
-    await setMaxRange(15);
+    await setMaxRange(10);
     await setGameStatus(false);
   };
 
@@ -139,15 +144,17 @@ export const TypingTest = () => {
     const newTime = new Date();
     newTime.setSeconds(newTime.getSeconds() + 59);
     restart(newTime, autoStart);
+    setUserStartType(false);
     clearVariables();
   };
 
   return (
     <Wrapper>
-      <NeonWrapper>
-        <Header>TEST YOUR TYPING SKILLS</Header>
-      </NeonWrapper>
-      <Subtitle>TYPING SPEED TEST</Subtitle>
+      <Header>
+        <Title variant="h2">
+          Test your <OrangeSpan>typing</OrangeSpan> skills
+        </Title>
+      </Header>
       <CounterWrapper>
         <Timer seconds={seconds} isRunning={isRunning}></Timer>
         <Counter number={correctWordsPerMinutes} text={"words/min"} />
@@ -155,39 +162,71 @@ export const TypingTest = () => {
         <Counter number={accurace.toFixed(2)} text={"% accuracy"} />
       </CounterWrapper>
       <Text>
-        {Object.values(wordsToTranscription).map(
-          ({ word, status, tracked, isCorrect }, index) => {
-            if (index >= minRange && index <= maxRange)
-              return (
-                <StyledTypography
-                  key={Math.random()}
-                  variant="h5"
-                  component="span"
-                  status={status}
-                  tracked={tracked.toString()}
-                  iscorrect={isCorrect.toString()}
-                >
-                  {word}
-                </StyledTypography>
-              );
-          }
-        )}
+        <Row>
+          {Object.values(wordsToTranscription).map(
+            ({ word, status, tracked, isCorrect }, index) => {
+              if (index >= minRange && index <= maxRange)
+                return (
+                  <WortToTranscribe
+                    key={Math.random()}
+                    variant="h5"
+                    component="span"
+                    status={status}
+                    tracked={tracked.toString()}
+                    iscorrect={isCorrect.toString()}
+                  >
+                    {word}
+                  </WortToTranscribe>
+                );
+            }
+          )}
+        </Row>
+        <Row>
+          {Object.values(wordsToTranscription).map(
+            ({ word, status, tracked, isCorrect }, index) => {
+              if (index >= minRange + 11 && index <= maxRange + 9)
+                return (
+                  <WortToTranscribe
+                    key={Math.random()}
+                    variant="h5"
+                    component="span"
+                    status={status}
+                    tracked={tracked.toString()}
+                    iscorrect={isCorrect.toString()}
+                  >
+                    {word}
+                  </WortToTranscribe>
+                );
+            }
+          )}
+        </Row>
       </Text>
-      <Input
-        disabled={gameStatus}
-        value={userWordType.trim()}
-        onChange={(e) => {
-          index == 0 && start();
-          compareWordInRealTime(e.target.value);
-        }}
-        onKeyPress={(e) => {
-          if (e.code == "Space" || e.keyCode == 32) {
-            index == 0 && start();
-            compareApprovedWords();
-            setUserWordType("");
-          }
-        }}
-      ></Input>
+
+      <InputContainer>
+        <StartMark view={userStartType}>
+          <Typography variant="subtitle1">Start typing</Typography>
+          <StartMarkArrow />
+        </StartMark>
+
+        <Input
+          disabled={gameStatus}
+          value={userWordType.trim()}
+          onChange={(e) => {
+            if (index == 0) {
+              start();
+              setUserStartType(true);
+            }
+            compareWordInRealTime(e.target.value);
+          }}
+          onKeyPress={(e) => {
+            if (e.code == "Space" || e.keyCode == 32) {
+              index == 0 && start();
+              compareApprovedWords();
+              setUserWordType("");
+            }
+          }}
+        ></Input>
+      </InputContainer>
       {gameStatus && <Button onClick={() => restartGame()}>Restar game</Button>}
     </Wrapper>
   );
