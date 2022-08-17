@@ -56,11 +56,12 @@ const opacityTransitions = keyframes`
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
   max-width: 100vw;
   max-height: 100vh;
   margin-top: 3%;
+  overflow: hidden;
 `;
 
 export const Header = styled.div`
@@ -217,3 +218,4 @@ export const StartMarkArrow = styled.div`
   transform: rotate(45deg);
   z-index: -1;
 `;
+
