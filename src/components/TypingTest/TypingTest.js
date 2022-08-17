@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { GlobalContext } from "../../api/context/GlobalStorage";
 import Timer from "./Timer/Timer";
 import { Counter } from "./Counter/Counter";
+import { PopupWithPlayerScore } from "../PopupWithPlayerScore";
 import {
   Wrapper,
   Header,
@@ -15,6 +16,7 @@ import {
   OrangeSpan,
   StartMark,
   StartMarkArrow,
+  PopupContainer,
 } from "./TypingTest.style";
 import { useTimer } from "react-timer-hook";
 import axios from "axios";
@@ -37,6 +39,11 @@ export const TypingTest = () => {
   const [downloadStatus, setDownloadStatus] = useState(false);
   const [userStartType, setUserStartType] = useState(false);
   const [rawQoutes, setRawQoutes] = useState([]);
+  const [guestScore, setGuestScore] = useState({
+    WPM: 0,
+    CPM: 0,
+    ACC: 0,
+  });
   // timer settings
   const time = new Date();
   time.setSeconds(time.getSeconds() + 59);
@@ -45,6 +52,11 @@ export const TypingTest = () => {
     autoStart: false,
     onExpire: () => {
       setGameStatus(true);
+      setGuestScore({
+        WPM: correctWordsPerMinutes,
+        CPM: charsPerMinutes,
+        ACC: +accurace.toFixed(2),
+      });
       userIsLoggedIn &&
         savePersonalRecord({
           WPM: correctWordsPerMinutes,
@@ -55,12 +67,11 @@ export const TypingTest = () => {
   });
 
   const transformWordsArray = () => {
-    console.log(rawQoutes);
     const words = rawQoutes
       .sort(() => 0.5 - Math.random())
       .join(" ")
       .split(" ");
-    console.log(words);
+
     const transformArray = words.map((word, index) => {
       return {
         word: word,
@@ -77,10 +88,10 @@ export const TypingTest = () => {
       "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
     );
     console.log(response.data.results);
-    const quote = await Object.values(response.data.results).map(
+    const quotes = await Object.values(response.data.results).map(
       (quote) => quote.content
     );
-    setRawQoutes(quote);
+    setRawQoutes(quotes);
   };
 
   useEffect(() => {
@@ -143,6 +154,7 @@ export const TypingTest = () => {
   };
 
   const restartGame = () => {
+    console.log("work");
     const autoStart = false;
     const newTime = new Date();
     newTime.setSeconds(newTime.getSeconds() + 59);
@@ -212,6 +224,7 @@ export const TypingTest = () => {
         </StartMark>
 
         <Input
+          autoComplete="off"
           disabled={gameStatus}
           value={userWordType.trim()}
           onChange={(e) => {
@@ -230,7 +243,13 @@ export const TypingTest = () => {
           }}
         ></Input>
       </InputContainer>
-      {gameStatus && <Button onClick={() => restartGame()}>Restar game</Button>}
+      {gameStatus && (
+        <PopupWithPlayerScore
+          guestScore={guestScore}
+          status={gameStatus}
+          restartGame={restartGame}
+        />
+      )}
     </Wrapper>
   );
 };
