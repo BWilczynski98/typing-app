@@ -1,30 +1,29 @@
 import styled from "styled-components";
 import { colors } from "../../../styles/GlobalColors.styles";
-import { TextField, Typography, Button } from "@mui/material";
+import { TextField, Typography, Button, IconButton } from "@mui/material";
 
-export const Wrapper = styled.div`
-  width: 50vw;
-  height: 100vh;
+export const Container = styled.div`
+  width: min(500px, 90%);
+  /* height: min(500px, 70%); */
+  padding: 20px 0px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-`;
-
-export const Container = styled.div`
-  width: 80%;
-  height: 80%;
-  display: flex;
-  flex-direction: column;
+  border-radius: 15px;
   gap: 20px;
+  background-color: white;
+  z-index: 100;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 export const Box = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  align-items: ${({ exit }) => (exit ? "flex-end" : "center")};
+  padding-right: ${({ exit }) => exit && "10px"};
 `;
 
 export const FormBox = styled.form`
@@ -69,7 +68,7 @@ export const AnimationSpan = styled.span`
   }
 `;
 
-export const InputForSingUp = styled(TextField)`
+export const StyledInput = styled(TextField)`
   width: 80%;
 
   & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
@@ -97,3 +96,5 @@ export const RegisterButton = styled(Button)`
     background-color: ${colors.darkOrange};
   }
 `;
+
+export const ExitButton = styled(IconButton)``;
