@@ -19,7 +19,6 @@ I learned about the new library responsible for timing 'react-timer-hook' and be
 * Material UI
 * Formik / Yup
 * react-timer-hook
-* Moment.js
 
 #### API
 
