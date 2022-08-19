@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { GlobalContext } from "../../api/context/GlobalStorage";
 import {
   StyledBackdrop,
   Popup,
@@ -22,7 +23,16 @@ import Cat from "../../images/Cat.png";
 import Owl from "../../images/Owl.png";
 import Greyhound from "../../images/Greyhound.png";
 
-const PopupWithPlayerScore = ({ guestScore, status, restartGame }) => {
+const PopupWithPlayerScore = ({
+  guestScore,
+  status,
+  restartGame,
+  loginWindowOpen,
+  singUpWindowOpen,
+}) => {
+  const { authenticator, user } = useContext(GlobalContext);
+  const { userIsLoggedIn } = authenticator;
+  const { setGuestStats } = user;
   const breakPoint = useMediaQuery("(max-width:768px)");
   let header;
   let startMsg;
@@ -104,10 +114,38 @@ const PopupWithPlayerScore = ({ guestScore, status, restartGame }) => {
               <StyledButton variant="outlined" onClick={() => restartGame()}>
                 Try Again
               </StyledButton>
-              {/* <Typography variant="subtitle2" component="div">
-                If you want to save the result
-              </Typography>
-              <StyledButton variant="contained">Register</StyledButton> */}
+              {!userIsLoggedIn && (
+                <>
+                  <Typography variant="subtitle2" component="div">
+                    If you want to save the result
+                  </Typography>
+                  <div>
+                    <StyledButton
+                      variant="contained"
+                      onClick={() => {
+                        setGuestStats(guestScore);
+                        restartGame();
+                        loginWindowOpen();
+                      }}
+                    >
+                      Login
+                    </StyledButton>
+                    <Typography variant="subtitle2" component="div">
+                      or
+                    </Typography>
+                    <StyledButton
+                      variant="contained"
+                      onClick={() => {
+                        setGuestStats(guestScore);
+                        restartGame();
+                        singUpWindowOpen();
+                      }}
+                    >
+                      Register
+                    </StyledButton>
+                  </div>
+                </>
+              )}
             </Buttons>
           </Row>
         </Popup>

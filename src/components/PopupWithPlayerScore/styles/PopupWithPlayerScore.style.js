@@ -1,10 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../../styles/GlobalColors.styles";
 import { Backdrop, IconButton, Button, Typography } from "@mui/material";
-import {
-  BlobAnimation,
-  OpacityAnimation,
-} from "../animation/PopupWithPlayerScore.animation";
+import { BlobAnimation, OpacityAnimation } from "../../../animation/Animation";
 
 export const Popup = styled.div`
   width: min(620px, 90vw);
@@ -99,6 +96,13 @@ export const Buttons = styled.div`
   width: 100%;
   height: 100%;
   gap: 10px;
+
+  div {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+  }
 `;
 
 export const IconButtonComponent = styled(IconButton)`

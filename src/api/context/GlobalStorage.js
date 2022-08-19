@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { auth, db, createUserDocument } from "../firebase/Config";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -16,92 +16,94 @@ export const GlobalStorage = ({ children }) => {
   const [token, setToken] = useState(initialToken);
   const userIsLoggedIn = !!token;
   const [errorMessage, setErrorMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [userStats, setUserStats] = useState(null);
+  const [guestStats, setGuestStats] = useState(null);
 
-  console.log(userIsLoggedIn);
-  console.log(auth.currentUser);
+  const clearErrorAlert = () => setErrorMessage("");
 
-  const singUp = async (email, password, name) => {
+  const singUp = async (email, password, name, closeWindow, guestStats) => {
+    setLoading(true);
     try {
       const user = await createUserWithEmailAndPassword(auth, email, password);
       const token = await user._tokenResponse.idToken;
       await localStorage.setItem("token", token);
       await updateProfile(auth.currentUser, { displayName: name });
-      await createUserDocument(user.user);
+      await createUserDocument(user.user, guestStats, setGuestStats);
       await setToken(true);
-      console.log(user.user);
+      await clearErrorAlert();
+      await closeWindow();
     } catch (error) {
       setErrorMessage(error.message);
     }
+    setLoading(false);
   };
 
-  const singIn = async (email, password) => {
+  const singIn = async (email, password, closeWindow) => {
+    setLoading(true);
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
       const token = await user._tokenResponse.idToken;
       await localStorage.setItem("token", token);
       await setToken(true);
+      await clearErrorAlert();
+
+      await closeWindow();
     } catch (error) {
       setErrorMessage(error.message);
     }
+    setLoading(false);
+    savePersonalRecord(guestStats);
   };
 
-  const resetPassword = (email) => {
+  const resetPassword = async (email, closeWindow) => {
+    setLoading(true);
     try {
-      sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email);
+      await clearErrorAlert();
+      await closeWindow();
     } catch (error) {
       setErrorMessage(error.message);
     }
+    setLoading(false);
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
-      signOut(auth);
-      localStorage.removeItem("token");
+      await signOut(auth);
+      await localStorage.removeItem("token");
+      await clearErrorAlert();
+      await setToken("");
     } catch (error) {
       setErrorMessage(error.message);
     }
   };
 
-  const changePassword = (currentUser, newPassword) => {
+  const changePassword = async (currentUser, newPassword) => {
     try {
-      updatePassword(currentUser, newPassword);
+      await updatePassword(currentUser, newPassword);
+      await clearErrorAlert();
     } catch (error) {
       setErrorMessage(error.message);
     }
-  };
-
-  const getCurrentStats = async () => {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const userSnap = await getDoc(userRef);
-    const userPersonalRecord = await userSnap.data().personalRecord;
-    await setUserStats(userPersonalRecord);
   };
 
   const savePersonalRecord = async (stats) => {
-    if (userIsLoggedIn) {
+    if (userIsLoggedIn || stats) {
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userSnap = await getDoc(userRef);
       const userPersonalRecord = await userSnap.data().personalRecord;
 
       userPersonalRecord.WPM < stats.WPM &&
-        (await setDoc(userRef, {
+        (await updateDoc(userRef, {
           personalRecord: {
             WPM: stats.WPM,
             CPM: stats.CPM,
             ACC: stats.ACC,
           },
         }));
-      getCurrentStats();
     }
   };
-
-  useEffect(() => {
-    getCurrentStats();
-    return () => {
-      getCurrentStats();
-    };
-  }, []);
 
   const STORAGE = {
     authenticator: {
@@ -116,6 +118,12 @@ export const GlobalStorage = ({ children }) => {
     user: {
       savePersonalRecord,
       userStats,
+      setGuestStats,
+      guestStats,
+    },
+    status: {
+      loading,
+      clearErrorAlert,
     },
   };
 
