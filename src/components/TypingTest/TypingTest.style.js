@@ -1,57 +1,13 @@
 import styled, { keyframes } from "styled-components";
 import { colors } from "../.././styles/GlobalColors.styles";
 import { TextField, Typography } from "@mui/material";
-
-const typing = keyframes`
- 
-  from {
-    width: 0;
-  }
-`;
-
-const blink = keyframes`
- 
-  50% {
-    border-color: transparent
-  }
-
-`;
-
-const slideIn = keyframes`
-  0% { 
-    transform: translateY(40vh); 
-  }
-
-  66%{
-    transform: translateY(40vh); 
-  }
-
-  100% {
-    transform: translateY(0vh);
-  }
-`;
-
-const Levitation = keyframes`
-0% {
-  transform: translatey(0px);
-}
-
-50% {
-  transform: translatey(15px);
-}
-
-100% {
-  transform: translatey(0px);
-}
-`;
-
-const opacityTransitions = keyframes`
-  0% { opacity:0; }
-  25% { opacity:0; }
-  50% { opacity:0; }
-  75% { opacity:0; }
-  100% { opacity:1; }
-`;
+import {
+  opacityTransitions,
+  typing,
+  blink,
+  slideIn,
+  Levitation,
+} from "../../animation/Animation";
 
 export const Wrapper = styled.div`
   display: flex;
@@ -151,9 +107,9 @@ export const Row = styled.div`
 
 export const WortToTranscribe = styled(Typography)`
   color: ${({ status }) =>
-    (status == true && "green") ||
-    (status == false && "red") ||
-    (status == null && "black")};
+    (status == "true" && "green") ||
+    (status == "false" && "red") ||
+    (status == "null" && "black")};
   background-color: ${({ tracked }) => tracked == "true" && colors.ligthGrey};
   background-color: ${({ iscorrect }) => iscorrect == "false" && "red"};
   border-radius: 10px;
@@ -203,7 +159,7 @@ export const StartMark = styled.div`
   height: 40px;
   color: white;
   border-radius: 10px;
-  z-index: 1;
+  z-index: 0;
   animation: ${Levitation} 2.2s ease infinite;
   transition: 0.5s ease;
   opacity: ${({ view }) => (!view ? 1 : 0)};

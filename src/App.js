@@ -1,11 +1,10 @@
 import React from "react";
-import { TypingTest } from "./components/TypingTest/TypingTest";
-import { PopupWithPlayerScore } from "./components/PopupWithPlayerScore";
+import Main from "./pages/Main";
 
 const App = () => {
   return (
     <div>
-      <TypingTest />
+      <Main />
     </div>
   );
 };

@@ -16,13 +16,12 @@ import {
   OrangeSpan,
   StartMark,
   StartMarkArrow,
-  PopupContainer,
 } from "./TypingTest.style";
 import { useTimer } from "react-timer-hook";
 import axios from "axios";
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
-export const TypingTest = () => {
+export const TypingTest = ({ loginWindowOpen, singUpWindowOpen }) => {
   const { authenticator, user } = useContext(GlobalContext);
   const { userIsLoggedIn } = authenticator;
   const { savePersonalRecord } = user;
@@ -75,7 +74,7 @@ export const TypingTest = () => {
     const transformArray = words.map((word, index) => {
       return {
         word: word,
-        status: null,
+        status: "null",
         tracked: index == 0 ? true : false,
         isCorrect: true,
       };
@@ -87,7 +86,6 @@ export const TypingTest = () => {
     const response = await axios.get(
       "https://api.quotable.io/search/quotes?query=every good technology is basically magic"
     );
-    console.log(response.data.results);
     const quotes = await Object.values(response.data.results).map(
       (quote) => quote.content
     );
@@ -125,13 +123,13 @@ export const TypingTest = () => {
     wordsToTranscription[index].tracked = false;
 
     if (userWordType === wordsToTranscription[index].word) {
-      wordsToTranscription[index].status = true;
+      wordsToTranscription[index].status = "true";
       setCorrectWordsPerMinutes((prev) => ++prev);
       setCharsPerMinutes(
         (prev) => (prev = prev + wordsToTranscription[index].word.length)
       );
     } else {
-      wordsToTranscription[index].status = false;
+      wordsToTranscription[index].status = "false";
     }
 
     if (index != 0 && index % 10 === 0) {
@@ -154,7 +152,6 @@ export const TypingTest = () => {
   };
 
   const restartGame = () => {
-    console.log("work");
     const autoStart = false;
     const newTime = new Date();
     newTime.setSeconds(newTime.getSeconds() + 59);
@@ -205,7 +202,7 @@ export const TypingTest = () => {
                     key={Math.random()}
                     variant="h5"
                     component="span"
-                    status={status}
+                    status={status.toString()}
                     tracked={tracked.toString()}
                     iscorrect={isCorrect.toString()}
                   >
@@ -248,6 +245,8 @@ export const TypingTest = () => {
           guestScore={guestScore}
           status={gameStatus}
           restartGame={restartGame}
+          loginWindowOpen={loginWindowOpen}
+          singUpWindowOpen={singUpWindowOpen}
         />
       )}
     </Wrapper>

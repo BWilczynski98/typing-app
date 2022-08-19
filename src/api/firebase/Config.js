@@ -16,11 +16,16 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-export const createUserDocument = async (user) => {
+export const createUserDocument = async (user, guestStats, setGuestStats) => {
   await setDoc(doc(db, "users", user.uid), {
     email: user.email,
     name: user.displayName,
     registerTime: serverTimestamp(),
-    personalRecord: { WPM: 0, CPM: 0, ACC: 0 },
+    personalRecord: {
+      WPM: guestStats.WPM ? guestStats.WPM : 0,
+      CPM: guestStats.WPM ? guestStats.CPM : 0,
+      ACC: guestStats.WPM ? guestStats.ACC : 0,
+    },
   });
+  await setGuestStats("");
 };

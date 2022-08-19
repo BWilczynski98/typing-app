@@ -1,5 +1,56 @@
 import { keyframes } from "styled-components";
 
+export const opacityTransitions = keyframes`
+  0% { opacity:0; }
+  25% { opacity:0; }
+  50% { opacity:0; }
+  75% { opacity:0; }
+  100% { opacity:1; }
+`;
+
+export const typing = keyframes`
+ 
+  from {
+    width: 0;
+  }
+`;
+
+export const blink = keyframes`
+ 
+  50% {
+    border-color: transparent
+  }
+
+`;
+
+export const slideIn = keyframes`
+  0% { 
+    transform: translateY(40vh); 
+  }
+
+  66%{
+    transform: translateY(40vh); 
+  }
+
+  100% {
+    transform: translateY(0vh);
+  }
+`;
+
+export const Levitation = keyframes`
+0% {
+  transform: translatey(0px);
+}
+
+50% {
+  transform: translatey(15px);
+}
+
+100% {
+  transform: translatey(0px);
+}
+`;
+
 export const BlobAnimation = keyframes`
   0% {
     border-radius: 48% 52% 68% 32% / 42% 28% 72% 58%;
