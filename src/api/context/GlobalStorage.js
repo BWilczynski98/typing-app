@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { auth, db, createUserDocument } from "../firebase/Config";
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -14,11 +14,11 @@ export const GlobalContext = createContext();
 export const GlobalStorage = ({ children }) => {
   const initialToken = localStorage.getItem("token");
   const [token, setToken] = useState(initialToken);
-  const userIsLoggedIn = !!token;
+  const userIsLoggedIn = token;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [userStats, setUserStats] = useState(null);
-  const [guestStats, setGuestStats] = useState(null);
+  const [userStats, setUserStats] = useState("");
+  const [guestStats, setGuestStats] = useState("");
 
   const clearErrorAlert = () => setErrorMessage("");
 
@@ -105,6 +105,16 @@ export const GlobalStorage = ({ children }) => {
     }
   };
 
+  const getUserStats = async () => {
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      setUserStats(userSnap.data().personalRecord);
+    } else {
+      console.log("No such document!");
+    }
+  };
+
   const STORAGE = {
     authenticator: {
       userIsLoggedIn,
@@ -117,6 +127,7 @@ export const GlobalStorage = ({ children }) => {
     },
     user: {
       savePersonalRecord,
+      getUserStats,
       userStats,
       setGuestStats,
       guestStats,

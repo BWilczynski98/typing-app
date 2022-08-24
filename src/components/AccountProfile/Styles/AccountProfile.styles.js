@@ -14,11 +14,14 @@ import EditIcon from "@mui/icons-material/Edit";
 
 export const Wrapper = styled.div`
   width: 100vw;
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+  background-color: white;
 `;
 
 export const Container = styled.div`
@@ -27,7 +30,6 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  z-index: 1000;
 `;
 
 export const Head = styled.div`

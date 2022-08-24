@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { auth } from "../../api/firebase/Config";
 import { GlobalContext } from "../../api/context/GlobalStorage";
 import {
   Wrapper,
@@ -16,27 +17,24 @@ import {
   StyledArrowIcon,
   StyledBadgeEditIcon,
   HeadTypography,
-  PasswordHandler,
   OrangeSpan,
   DarkGreySpan,
 } from "./Styles/AccountProfile.styles";
-
 import { Typography, Divider } from "@mui/material";
 
-const AccountProfile = () => {
+const AccountProfile = ({ accountWindowClose }) => {
   const { authenticator, user } = useContext(GlobalContext);
   const { logout } = authenticator;
   const { userStats } = user;
-  const [password, setPassword] = useState("password");
-  const [passwordHandler, setPasswordHandler] = useState(true);
-
-  console.log(userStats);
+  const userName = auth.currentUser.displayName;
+  const userEmail = auth.currentUser.email;
+  console.log(auth);
 
   return (
     <Wrapper>
       <Container>
         <Head>
-          <BackIconButton>
+          <BackIconButton onClick={accountWindowClose}>
             <StyledArrowIcon />
           </BackIconButton>
           <HeadTypography variant="h5">My Account</HeadTypography>
@@ -52,15 +50,12 @@ const AccountProfile = () => {
                 </EditAvatarIconButton>
               }
             >
-              <StyledAvatar
-                alt="user"
-                src="https://images.unsplash.com/photo-1542740348-39501cd6e2b4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-              />
+              <StyledAvatar alt="user" />
             </StyledBadge>
           </div>
           <div>
             <div>
-              <Typography variant="h5">Jane Doe</Typography>
+              <Typography variant="h5">{userName}</Typography>
             </div>
             <div>
               <Typography variant="body2">
@@ -82,7 +77,7 @@ const AccountProfile = () => {
                 <Typography variant="body2">
                   <DarkGreySpan>Display Name</DarkGreySpan>
                 </Typography>
-                <Typography variant="body1">Jane Doe</Typography>
+                <Typography variant="body1">{userName}</Typography>
               </div>
             </CardItem>
             <CardItem>
@@ -90,36 +85,7 @@ const AccountProfile = () => {
                 <Typography variant="body2">
                   <DarkGreySpan>Email</DarkGreySpan>
                 </Typography>
-                <Typography variant="body1">jane.doe@gmail.com</Typography>
-              </div>
-            </CardItem>
-            <CardItem>
-              <div>
-                <Typography variant="body2">
-                  <DarkGreySpan>Password</DarkGreySpan>
-                </Typography>
-                <PasswordHandler
-                  type={passwordHandler && "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  size="small"
-                  disabled={passwordHandler}
-                  variant="standard"
-                  InputProps={{ disableUnderline: passwordHandler }}
-                />
-              </div>
-              <div>
-                <div>
-                  <CardButton
-                    variant="contained"
-                    onClick={() =>
-                      setPasswordHandler((prevState) => !prevState)
-                    }
-                    size="small"
-                  >
-                    Change
-                  </CardButton>
-                </div>
+                <Typography variant="body1">{userEmail}</Typography>
               </div>
             </CardItem>
           </Card>
@@ -133,17 +99,9 @@ const AccountProfile = () => {
           <Card>
             <CardItem>
               <div>
-                <Typography variant="body2">Rank</Typography>
-                <Typography variant="body1">
-                  <OrangeSpan>1</OrangeSpan>
-                </Typography>
-              </div>
-            </CardItem>
-            <CardItem>
-              <div>
                 <Typography variant="body2">Words</Typography>
                 <Typography variant="body1">
-                  <OrangeSpan></OrangeSpan>/min
+                  <OrangeSpan>{userStats.WPM}</OrangeSpan>/min
                 </Typography>
               </div>
             </CardItem>
@@ -151,7 +109,7 @@ const AccountProfile = () => {
               <div>
                 <Typography variant="body2">Chars</Typography>
                 <Typography variant="body1">
-                  <OrangeSpan>201</OrangeSpan>/min
+                  <OrangeSpan>{userStats.CPM}</OrangeSpan>/min
                 </Typography>
               </div>
             </CardItem>
@@ -159,14 +117,20 @@ const AccountProfile = () => {
               <div>
                 <Typography variant="body2">Accuracy</Typography>
                 <Typography variant="body1">
-                  <OrangeSpan>92.63</OrangeSpan>%
+                  <OrangeSpan>{userStats.ACC}</OrangeSpan>%
                 </Typography>
               </div>
             </CardItem>
           </Card>
         </Box>
         <Box>
-          <LogoutButton variant="contained" onClick={logout}>
+          <LogoutButton
+            variant="contained"
+            onClick={() => {
+              accountWindowClose();
+              logout();
+            }}
+          >
             Logout
           </LogoutButton>
         </Box>
