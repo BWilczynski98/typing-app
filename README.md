@@ -26,7 +26,7 @@ I learned about the new library responsible for timing 'react-timer-hook' and be
 
 ##  How To Use The Project
 
-You can use the app without having an account, but if you would like to record your score and participate in the ranking, you need to create your own account
+You can use the app without having an account, but if you would like to record your score you need to create your own account
 ## Demo
 
 https://typing-app-lac.vercel.app/
@@ -39,4 +39,4 @@ https://typing-app-lac.vercel.app/
 * Countdown
 * Pop-up that summarizes the user's achievement
 * Handling user accounts
-* User's ranking
+* The result for non-logged-in users is not lost, they have the option of creating an account or logging into an existing one without trace
