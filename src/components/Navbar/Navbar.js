@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { Wrapper, Container, NavButton } from "./styles/Navbar.styles";
 import { GlobalContext } from "../../api/context/GlobalStorage";
 
-const Navbar = ({ loginWindowOpen, singUpWindowOpen }) => {
-  const { authenticator } = useContext(GlobalContext);
+const Navbar = ({ loginWindowOpen, singUpWindowOpen, accountWindowOpen }) => {
+  const { authenticator, user } = useContext(GlobalContext);
   const { userIsLoggedIn, logout } = authenticator;
   return (
     <Wrapper>
@@ -25,7 +25,15 @@ const Navbar = ({ loginWindowOpen, singUpWindowOpen }) => {
       )}
       {userIsLoggedIn && (
         <Container>
-          <NavButton variant="outlined">My account</NavButton>
+          <NavButton
+            variant="outlined"
+            onClick={() => {
+              user.getUserStats();
+              accountWindowOpen();
+            }}
+          >
+            My account
+          </NavButton>
           <NavButton primary={+true} variant="outlined" onClick={logout}>
             Logout
           </NavButton>
